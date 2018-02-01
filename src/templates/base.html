@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+	<html land=en>
+
+	<head>
+		<title>{% block head_title %} Muypicky.com {% endblock head_title%}</title>
+		{% include 'snippets/css.html' %}
+	</head>
+
+	<body>
+
+		{% include 'snippets/nav.html' %}
+
+		<div class="container">
+		{% block content %}
+		Hello there!
+		{% endblock content %}
+		</div>
+
+		{% include 'snippets/js.html' %}
+	</body>
+	</html>
