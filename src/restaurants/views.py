@@ -1,44 +1,39 @@
-import random
+from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.views import View
+from django.views.generic import TemplateView, ListView, DetailView
 
-# Create your views here.
-# Function based view
-def  home(request):
-	num = None
+from .models import RestaurantLocation
 
-	some_list = [
-		random.randint(0, 100000000000), 
-		random.randint(0, 100000000000), 
-		random.randint(0, 100000000000)
-		]
-
-	condition_bool_item = False
-
-	if condition_bool_item:
-		num = random.randint(0, 100000000000)
-
+def restaurant_listview(request):
+	template_name = 'restaurants/restaurants_list.html'
+	queryset = RestaurantLocation.objects.all()
 	context = {
-		"bool_item": True, 
-		"num": num, 
-		"some_list": some_list
+		"object_list": queryset
 	}
 
-	return render(request, "home.html", context)
+	return render(request, template_name, context)
 
-def  about(request):
+class RestaurantListView(ListView):
+	template_name = 'restaurants/restaurants_list.html'
 
-	context = {
+	def get_queryset(self):
+		slug = self.kwargs.get("slug")
+		if slug:
+			queryset = RestaurantLocation.objects.filter(
+				Q(category__iexact=slug) |
+				Q(category__icontains=slug)
+				)
+		else:
+			queryset = RestaurantLocation.objects.all()
+		return queryset
 
-	}
-
-	return render(request, "about.html", context)
-
-def  contact(request):
-
-	context = {
-
-	}
-
-	return render(request, "contact.html", context)
+class RestaurantDetailView(DetailView):
+	queryset = RestaurantLocation.objects.all()
+	
+	def  get_oblect(self, *args, **kwargs):
+		rest_id = self.kwargs.get('rest_id')
+		obj = get_object_or_404(RestaurantLocation, id=rest_id)
+		return obj
 
